@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - Create Professional Resumes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#64748B',
+                        success: '#10B981',
+                        background: '#F8FAFC',
+                        text: '#1E293B',
+                        accent: '#8B5CF6'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-background font-inter">
+
+    <!-- @COMPONENT: Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-text">Craft.CV</h1>
+                </div>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Templates</a>
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Examples</a>
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Pricing</a>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Sign In
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- @COMPONENT: MainContainer -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- @COMPONENT: ProgressSidebar -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-sm p-6 sticky top-8">
+                    <h2 class="text-lg font-semibold text-text mb-6">Resume Progress</h2>
+                    
+                    <!-- Progress Steps -->
+                    <div class="space-y-4">
+                        <!-- Step 1: Personal Info - Active -->
+                        <div class="flex items-center space-x-3 group">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-text">Personal Information</p>
+                                <p class="text-sm text-success">Completed</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Work Experience - Active -->
+                        <div class="flex items-center space-x-3 group">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i class="fas fa-briefcase text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-text">Work Experience</p>
+                                <p class="text-sm text-primary">In Progress</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Education -->
+                        <div class="flex items-center space-x-3 group opacity-60">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-gray-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-secondary">Education</p>
+                                <p class="text-sm text-secondary">Pending</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Skills -->
+                        <div class="flex items-center space-x-3 group opacity-60">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                <i class="fas fa-cogs text-gray-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-secondary">Skills</p>
+                                <p class="text-sm text-secondary">Pending</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 5: Projects -->
+                        <div class="flex items-center space-x-3 group opacity-60">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                <i class="fas fa-project-diagram text-gray-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-secondary">Projects</p>
+                                <p class="text-sm text-secondary">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-secondary">Overall Progress</span>
+                            <span class="text-sm font-medium text-text">40%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Assistant -->
+                    <div class="mt-8 p-4 bg-accent/10 rounded-lg">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-robot text-accent"></i>
+                            <span class="font-medium text-text">AI Assistant</span>
+                        </div>
+                        <p class="text-sm text-secondary mb-3">Get AI-powered suggestions for your work experience section.</p>
+                        <button class="w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm">
+                            <i class="fas fa-magic mr-2"></i>Generate Content
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ProgressSidebar -->
+            
+            <!-- @COMPONENT: FormSection -->
+            <div class="lg:col-span-5">
+                <div class="bg-white rounded-xl shadow-sm p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-text">Work Experience</h2>
+                            <p class="text-secondary mt-1">Add your professional experience to showcase your career journey</p>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-accent/10 px-3 py-2 rounded-lg">
+                            <i class="fas fa-robot text-accent text-sm"></i>
+                            <span class="text-sm font-medium text-accent">AI Enabled</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Work Experience Form -->
+                    <form class="space-y-6" data-mock="true">
+                        <!-- Experience Entry 1 -->
+                        <div class="border border-gray-200 rounded-lg p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold text-text">Experience #1</h3>
+                                <button type="button" class="text-red-500 hover:text-red-700 transition-colors">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-text mb-2">Job Title</label>
+                                    <input type="text" 
+                                           placeholder="e.g. Senior Software Engineer" 
+                                           value="Senior Software Engineer"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                           data-bind="experience[0].title">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-text mb-2">Company</label>
+                                    <input type="text" 
+                                           placeholder="e.g. Tech Corp" 
+                                           value="Tech Innovations Inc."
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                           data-bind="experience[0].company">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-text mb-2">Start Date</label>
+                                    <input type="month" 
+                                           value="2022-01"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                           data-bind="experience[0].startDate">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-text mb-2">End Date</label>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="month" 
+                                               value="2024-03"
+                                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                               data-bind="experience[0].endDate">
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            <span class="text-sm text-secondary">Current</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-text mb-2">Location</label>
+                                <input type="text" 
+                                       placeholder="e.g. San Francisco, CA" 
+                                       value="San Francisco, CA"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                       data-bind="experience[0].location">
+                            </div>
+                            
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-sm font-medium text-text">Job Description</label>
+                                    <button type="button" class="bg-accent text-white px-3 py-1 rounded-md text-xs hover:bg-purple-600 transition-colors">
+                                        <i class="fas fa-magic mr-1"></i>AI Enhance
+                                    </button>
+                                </div>
+                                <textarea rows="4" 
+                                          placeholder="Describe your key responsibilities and achievements..."
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+                                          data-bind="experience[0].description">Led a cross-functional team of 8 developers in architecting and implementing scalable microservices solutions, resulting in 40% improved system performance and 99.9% uptime. Mentored junior developers and established best practices for code review and deployment processes.</textarea>
+                            </div>
+                            
+                            <!-- Key Achievements -->
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="block text-sm font-medium text-text">Key Achievements</label>
+                                    <button type="button" class="text-primary hover:text-blue-700 transition-colors text-sm">
+                                        <i class="fas fa-plus mr-1"></i>Add Achievement
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-grip-vertical text-gray-400"></i>
+                                        <input type="text" 
+                                               value="Reduced deployment time by 60% through CI/CD pipeline optimization"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                                               data-bind="experience[0].achievements[0]">
+                                        <button type="button" class="text-red-500 hover:text-red-700 transition-colors">
+                                            <i class="fas fa-times text-sm"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-grip-vertical text-gray-400"></i>
+                                        <input type="text" 
+                                               value="Increased user engagement by 25% through performance optimizations"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                                               data-bind="experience[0].achievements[1]">
+                                        <button type="button" class="text-red-500 hover:text-red-700 transition-colors">
+                                            <i class="fas fa-times text-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add Experience Button -->
+                        <button type="button" class="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary hover:bg-primary/5 transition-all group">
+                            <div class="flex flex-col items-center space-y-2">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                    <i class="fas fa-plus text-gray-500 group-hover:text-primary transition-colors"></i>
+                                </div>
+                                <span class="font-medium text-secondary group-hover:text-primary transition-colors">Add Another Experience</span>
+                                <span class="text-sm text-secondary">Build a comprehensive work history</span>
+                            </div>
+                        </button>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                            <button type="button" class="flex items-center space-x-2 text-secondary hover:text-text transition-colors">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Previous Step</span>
+                            </button>
+                            
+                            <div class="flex items-center space-x-3">
+                                <button type="button" class="px-6 py-2 border border-gray-300 text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                    Save Draft
+                                </button>
+                                <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                                    <span>Continue</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- AI Suggestions Panel -->
+                <div class="mt-6 bg-white rounded-xl shadow-sm p-6 border-l-4 border-accent">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-accent text-sm"></i>
+                        </div>
+                        <h3 class="font-semibold text-text">AI Suggestions</h3>
+                        <span class="bg-accent/10 text-accent px-2 py-1 rounded-full text-xs font-medium">New</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-text mb-2"><strong>Enhance your job title:</strong></p>
+                            <p class="text-sm text-secondary">"Senior Software Engineer" → "Senior Full-Stack Software Engineer"</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <button class="bg-accent text-white px-3 py-1 rounded-md text-xs hover:bg-purple-600 transition-colors">Apply</button>
+                                <button class="text-secondary hover:text-text text-xs">Dismiss</button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-text mb-2"><strong>Add quantified achievement:</strong></p>
+                            <p class="text-sm text-secondary">"Implemented automated testing framework that reduced bug reports by 45%"</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <button class="bg-accent text-white px-3 py-1 rounded-md text-xs hover:bg-purple-600 transition-colors">Apply</button>
+                                <button class="text-secondary hover:text-text text-xs">Dismiss</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: FormSection -->
+            
+            <!-- @COMPONENT: ResumePreview -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-8">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold text-text">Resume Preview</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 text-secondary hover:text-text transition-colors">
+                                        <i class="fas fa-search-minus"></i>
+                                    </button>
+                                    <button class="p-2 text-secondary hover:text-text transition-colors">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resume Document Preview -->
+                        <div class="p-6 bg-gray-50 max-h-[800px] overflow-y-auto">
+                            <div class="bg-white shadow-lg mx-auto" style="width: 8.5in; min-height: 11in; max-width: 100%; transform: scale(0.6); transform-origin: top center;">
+                                <!-- Resume Header -->
+                                <div class="p-8">
+                                    <div class="flex items-start space-x-6">
+                                        <!-- Profile Photo Placeholder -->
+                                        <!-- Professional headshot of a business person -->
+                                        <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200" 
+                                                 alt="Professional headshot" 
+                                                 class="w-full h-full object-cover"
+                                                 data-mock-image="true" 
+                                                 data-implementation="User uploaded photo will appear here">
+                                        </div>
+                                        
+                                        <div class="flex-1">
+                                            <h1 class="text-3xl font-bold text-text mb-2" data-bind="personalInfo.fullName">Your Name</h1>
+                                            <h2 class="text-xl text-primary mb-4" data-bind="personalInfo.title">Senior Software Engineer</h2>
+                                            
+                                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-envelope text-secondary"></i>
+                                                    <span data-bind="personalInfo.email">your.Personal@email.com</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-phone text-secondary"></i>
+                                                    <span data-bind="personalInfo.phone">+1 (555) 123-4567</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-map-marker-alt text-secondary"></i>
+                                                    <span data-bind="personalInfo.location">Stuttgart, Germany</span>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fab fa-linkedin text-secondary"></i>
+                                                    <span data-bind="personalInfo.linkedin">linkedin.com/in/name</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Professional Summary -->
+                                    <div class="mt-6">
+                                        <h3 class="text-lg font-semibold text-text border-b-2 border-primary pb-1 mb-3">PROFESSIONAL SUMMARY</h3>
+                                        <p class="text-sm leading-relaxed text-text" data-bind="personalInfo.summary">
+                                            Experienced Senior Software Engineer with 8+ years of expertise in full-stack development, 
+                                            system architecture, and team leadership. Proven track record of delivering scalable 
+                                            solutions and mentoring development teams in fast-paced environments.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Work Experience Section -->
+                                <div class="px-8 pb-6">
+                                    <h3 class="text-lg font-semibold text-text border-b-2 border-primary pb-1 mb-4">WORK EXPERIENCE</h3>
+                                    
+                                    <!-- @MAP: experiences.map(experience => ( -->
+                                    <div class="mb-6">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 class="font-semibold text-text" data-bind="experience.title">Senior Software Engineer</h4>
+                                                <h5 class="text-primary font-medium" data-bind="experience.company">Tech Innovations Inc.</h5>
+                                            </div>
+                                            <div class="text-right text-sm text-secondary">
+                                                <div data-bind="experience.duration">Jan 2022 - Present</div>
+                                                <div data-bind="experience.location">San Francisco, CA</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <p class="text-sm text-text mb-2 leading-relaxed" data-bind="experience.description">
+                                            Led a cross-functional team of 8 developers in architecting and implementing scalable 
+                                            microservices solutions, resulting in 40% improved system performance and 99.9% uptime. 
+                                            Mentored junior developers and established best practices for code review and deployment processes.
+                                        </p>
+                                        
+                                        <ul class="list-disc list-inside text-sm text-text space-y-1 ml-4">
+                                            <li data-bind="experience.achievements[0]">Reduced deployment time by 60% through CI/CD pipeline optimization</li>
+                                            <li data-bind="experience.achievements[1]">Increased user engagement by 25% through performance optimizations</li>
+                                            <li>Implemented automated testing framework reducing bug reports by 45%</li>
+                                        </ul>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                    
+                                    <!-- Previous Experience Preview -->
+                                    <div class="mb-6 opacity-75">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 class="font-semibold text-text">Software Engineer</h4>
+                                                <h5 class="text-primary font-medium">StartupCorp</h5>
+                                            </div>
+                                            <div class="text-right text-sm text-secondary">
+                                                <div>Jun 2019 - Dec 2021</div>
+                                                <div>Palo Alto, CA</div>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-text leading-relaxed">
+                                            Developed and maintained web applications using React, Node.js, and PostgreSQL...
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Education Section Preview -->
+                                <div class="px-8 pb-6">
+                                    <h3 class="text-lg font-semibold text-text border-b-2 border-primary pb-1 mb-4">EDUCATION</h3>
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-semibold text-text">Bachelor of Science in Computer Science</h4>
+                                            <h5 class="text-primary font-medium">University of California, Berkeley</h5>
+                                        </div>
+                                        <div class="text-right text-sm text-secondary">
+                                            <div>2015 - 2019</div>
+                                            <div>Berkeley, CA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Skills Section Preview -->
+                                <div class="px-8 pb-8">
+                                    <h3 class="text-lg font-semibold text-text border-b-2 border-primary pb-1 mb-4">TECHNICAL SKILLS</h3>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <strong class="text-text">Programming Languages:</strong>
+                                            <span class="text-secondary ml-1">JavaScript, Python, Java, TypeScript</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-text">Frameworks:</strong>
+                                            <span class="text-secondary ml-1">React, Node.js, Express, Django</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-text">Databases:</strong>
+                                            <span class="text-secondary ml-1">PostgreSQL, MongoDB, Redis</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-text">Tools:</strong>
+                                            <span class="text-secondary ml-1">Docker, AWS, Git, Jenkins</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Actions -->
+                        <div class="p-6 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option>Professional Template</option>
+                                        <option>Modern Template</option>
+                                        <option>Creative Template</option>
+                                        <option>Minimalist Template</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3">
+                                    <button class="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-eye"></i>
+                                        <span>Full Preview</span>
+                                    </button>
+                                    <button class="flex items-center space-x-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-600 transition-colors">
+                                        <i class="fas fa-download"></i>
+                                        <span>Download PDF</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ResumePreview -->
+            
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainContainer -->
+    
+    <!-- @COMPONENT: FloatingCTA -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <div class="bg-white rounded-lg shadow-lg p-4 border border-gray-200 max-w-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-robot text-accent"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-text">Need help with your resume?</p>
+                    <p class="text-xs text-secondary">Our AI assistant can help optimize your content</p>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+            <button class="w-full mt-3 bg-accent text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm">
+                Get AI Help
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: FloatingCTA -->
+
+    <script>
+        (function() {
+            // TODO: Implement form state management across steps
+            // TODO: Implement AI content generation API calls
+            // TODO: Implement PDF generation functionality
+            // TODO: Implement image upload and processing
+            
+            // Form interaction handlers
+            const formElements = {
+                experiences: [],
+                currentStep: 2,
+                totalSteps: 5
+            };
+            
+            // Progress tracking
+            function updateProgress() {
+                const progress = (formElements.currentStep / formElements.totalSteps) * 100;
+                const progressBar = document.querySelector('.bg-primary.h-2.rounded-full');
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+            }
+            
+            // Achievement management
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event="click:addAchievement"]')) {
+                    // TODO: Add new achievement input field
+                }
+                
+                if (e.target.closest('[data-event="click:removeAchievement"]')) {
+                    // TODO: Remove achievement input field
+                }
+                
+                if (e.target.closest('[data-event="click:addExperience"]')) {
+                    // TODO: Add new experience form section
+                }
+                
+                if (e.target.closest('[data-event="click:removeExperience"]')) {
+                    // TODO: Remove experience form section
+                }
+            });
+            
+            // AI Enhancement simulation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('button:contains("AI Enhance")') || e.target.closest('button:contains("Generate Content")')) {
+                    e.preventDefault();
+                    // TODO: Implement OpenAI API integration for content enhancement
+                    // Show loading state, call API, update form fields
+                }
+            });
+            
+            // Form validation
+            function validateCurrentStep() {
+                // TODO: Implement form validation for current step
+                return true;
+            }
+            
+            // Step navigation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event="click:nextStep"]')) {
+                    e.preventDefault();
+                    if (validateCurrentStep()) {
+                        formElements.currentStep++;
+                        updateProgress();
+                        // TODO: Navigate to next step
+                    }
+                }
+                
+                if (e.target.closest('[data-event="click:prevStep"]')) {
+                    e.preventDefault();
+                    formElements.currentStep--;
+                    updateProgress();
+                    // TODO: Navigate to previous step
+                }
+            });
+            
+            // PDF Generation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event="click:downloadPDF"]')) {
+                    e.preventDefault();
+                    // TODO: Implement PDF generation with jsPDF or similar
+                    // Include user data and selected template
+                }
+            });
+            
+            // Initialize
+            updateProgress();
+        })();
+    </script>
+
+</body>
+</html>

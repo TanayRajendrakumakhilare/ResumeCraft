@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - Create Professional CVs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'secondary': '#64748B',
+                        'success': '#10B981',
+                        'background': '#F8FAFC',
+                        'text': '#1E293B',
+                        'accent': '#8B5CF6'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="font-inter bg-background text-text min-h-screen">
+    <!-- @COMPONENT: Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-text">Craft.CV</h1>
+                </div>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Templates</a>
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Examples</a>
+                    <a href="#" class="text-secondary hover:text-text transition-colors">Pricing</a>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Sign In
+                    </button>
+                </nav>
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-secondary"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- @COMPONENT: FormWizard -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <!-- Progress Indicator -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-semibold text-text">Build Your Resume</h2>
+                        <span class="text-sm text-secondary">Step 1 of 4</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex-1 bg-primary h-2 rounded-full"></div>
+                        <div class="flex-1 bg-gray-200 h-2 rounded-full"></div>
+                        <div class="flex-1 bg-gray-200 h-2 rounded-full"></div>
+                        <div class="flex-1 bg-gray-200 h-2 rounded-full"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-secondary mt-2">
+                        <span>Personal</span>
+                        <span>Experience</span>
+                        <span>Education</span>
+                        <span>Skills</span>
+                    </div>
+                </div>
+
+                <!-- Personal Information Form -->
+                <div data-step="1" class="space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="text-lg font-medium text-text mb-2">Personal Information</h3>
+                        <p class="text-sm text-secondary">Let's start with your basic details</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-text mb-2">First Name</label>
+                            <input type="text" data-bind="user.firstName" placeholder="firstName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text mb-2">Last Name</label>
+                            <input type="text" data-bind="user.lastName" placeholder="lastname" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-2">Professional Title</label>
+                        <div class="relative">
+                            <input type="text" data-bind="user.title" placeholder="Software Developer" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-accent hover:text-purple-700 transition-colors" 
+                                    data-event="click:generateTitle" data-implementation="Should trigger AI title suggestion">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-secondary mt-1">
+                            <i class="fas fa-magic text-accent mr-1"></i>
+                            AI can suggest professional titles based on your experience
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-text mb-2">Email</label>
+                            <input type="email" data-bind="user.email" placeholder="your.Personal@email.com" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text mb-2">Phone</label>
+                            <input type="tel" data-bind="user.phone" placeholder="+1 (555) 123-4567" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-2">Location</label>
+                        <input type="text" data-bind="user.location" placeholder="San Francisco, CA" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-2">LinkedIn Profile</label>
+                        <input type="url" data-bind="user.linkedin" placeholder="https://linkedin.com/in/Name" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-2">Professional Summary</label>
+                        <div class="relative">
+                            <textarea data-bind="user.summary" rows="4" 
+                                      placeholder="Brief overview of your professional background and career objectives..."
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"></textarea>
+                            <button class="absolute top-3 right-3 text-accent hover:text-purple-700 transition-colors" 
+                                    data-event="click:generateSummary" data-implementation="Should trigger AI summary generation">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-xs text-secondary">
+                                <i class="fas fa-magic text-accent mr-1"></i>
+                                AI can craft a compelling summary for you
+                            </p>
+                            <span class="text-xs text-secondary">0/150</span>
+                        </div>
+                    </div>
+
+                    <!-- AI Assistance Panel -->
+                    <div class="bg-accent/5 border border-accent/20 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-robot text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-text mb-1">AI Writing Assistant</h4>
+                                <p class="text-sm text-secondary mb-3">Get personalized suggestions for your resume content</p>
+                                <button class="bg-accent text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors"
+                                        data-event="click:openAIAssistant" data-implementation="Should open AI content generation modal">
+                                    <i class="fas fa-magic mr-2"></i>
+                                    Generate Content
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                    <button disabled class="px-6 py-3 text-secondary bg-gray-100 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Previous
+                    </button>
+                    <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                            data-event="click:nextStep" data-implementation="Should validate current step and proceed to next">
+                        Next Step
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: FormWizard -->
+
+            <!-- @COMPONENT: ResumePreview -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-text">Live Preview</h3>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 text-secondary hover:text-text transition-colors" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="text-sm text-secondary">75%</span>
+                        <button class="p-2 text-secondary hover:text-text transition-colors" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resume Template Preview -->
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden" style="transform: scale(0.75); transform-origin: top left; width: 133.33%; height: 133.33%;">
+                    <div class="w-full h-[800px] p-8 bg-white">
+                        <!-- Resume Header -->
+                        <div class="border-b-2 border-primary pb-4 mb-6">
+                            <h1 class="text-3xl font-bold text-text mb-2" data-bind="user.firstName + ' ' + user.lastName">ABC XYZ</h1>
+                            <p class="text-lg text-secondary mb-3" data-bind="user.title">Software Developer</p>
+                            <div class="flex flex-wrap gap-4 text-sm text-secondary">
+                                <span data-bind="user.email">ABC.XZ@email.com</span>
+                                <span data-bind="user.phone">+1 (555) 123-4567</span>
+                                <span data-bind="user.location">Stuttgart, Germany</span>
+                                <span data-bind="user.linkedin">linkedin.com/in/ABC</span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Summary -->
+                        <div class="mb-6">
+                            <h2 class="text-lg font-semibold text-text mb-3 border-b border-gray-200 pb-1">SUMMARY</h2>
+                            <p class="text-sm text-secondary leading-relaxed" data-bind="user.summary">
+                                Experienced software developer with 5+ years of expertise in full-stack development. 
+                                Proven track record of delivering scalable web applications and leading cross-functional teams.
+                            </p>
+                        </div>
+
+                        <!-- Experience Section Placeholder -->
+                        <div class="mb-6">
+                            <h2 class="text-lg font-semibold text-text mb-3 border-b border-gray-200 pb-1">EXPERIENCE</h2>
+                            <div class="space-y-4">
+                                <div class="opacity-50">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h3 class="font-medium text-text">Senior Software Developer</h3>
+                                        <span class="text-sm text-secondary">2021 - Present</span>
+                                    </div>
+                                    <p class="text-sm text-secondary mb-2">Tech Company Inc. • San Francisco, CA</p>
+                                    <ul class="text-sm text-secondary space-y-1">
+                                        <li>• Led development of microservices architecture</li>
+                                        <li>• Improved application performance by 40%</li>
+                                        <li>• Mentored junior developers and code reviews</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-gray-50 rounded-lg text-center">
+                                <p class="text-sm text-secondary">
+                                    <i class="fas fa-plus-circle mr-2"></i>
+                                    Complete Step 2 to add your work experience
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Education Section Placeholder -->
+                        <div class="mb-6">
+                            <h2 class="text-lg font-semibold text-text mb-3 border-b border-gray-200 pb-1">EDUCATION</h2>
+                            <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                <p class="text-sm text-secondary">
+                                    <i class="fas fa-plus-circle mr-2"></i>
+                                    Complete Step 3 to add your education
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section Placeholder -->
+                        <div>
+                            <h2 class="text-lg font-semibold text-text mb-3 border-b border-gray-200 pb-1">SKILLS</h2>
+                            <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                <p class="text-sm text-secondary">
+                                    <i class="fas fa-plus-circle mr-2"></i>
+                                    Complete Step 4 to add your skills
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Actions -->
+                <div class="mt-6 space-y-3">
+                    <button class="w-full bg-success text-white py-3 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                            disabled data-event="click:downloadPDF" data-implementation="Should generate and download PDF">
+                        <i class="fas fa-download mr-2"></i>
+                        Download PDF (Complete all steps)
+                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="flex items-center justify-center py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-palette mr-2 text-secondary"></i>
+                            <span class="text-sm">Change Template</span>
+                        </button>
+                        <button class="flex items-center justify-center py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-share-alt mr-2 text-secondary"></i>
+                            <span class="text-sm">Share</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ATS Score -->
+                <div class="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-text">ATS Compatibility</span>
+                        <span class="text-sm font-semibold text-success">85%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-success h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <p class="text-xs text-secondary mt-2">
+                        <i class="fas fa-check-circle text-success mr-1"></i>
+                        Great! Your resume is highly compatible with ATS systems
+                    </p>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ResumePreview -->
+        </div>
+    </div>
+
+    <!-- @COMPONENT: FeatureHighlights -->
+    <section class="bg-white py-16 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-text mb-4">Why Choose Craft.CV?</h2>
+                <p class="text-lg text-secondary max-w-2xl mx-auto">
+                    Create professional resumes that get noticed by both recruiters and ATS systems
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-text mb-3">AI-Powered Content</h3>
+                    <p class="text-secondary">
+                        Let AI help you craft compelling resume content that highlights your strengths and achievements
+                    </p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-shield text-success text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-text mb-3">ATS Optimized</h3>
+                    <p class="text-secondary">
+                        All templates are optimized for Applicant Tracking Systems to ensure your resume gets seen
+                    </p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-paint-brush text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-text mb-3">Professional Templates</h3>
+                    <p class="text-secondary">
+                        Choose from a variety of professionally designed templates that make a great first impression
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeatureHighlights -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-text text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-alt text-white text-sm"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">Craft.CV</h3>
+                    </div>
+                    <p class="text-gray-300">
+                        Create professional, ATS-friendly resumes with the power of AI assistance.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Resume Builder</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Templates</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Examples</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8 mt-8 text-center text-gray-300">
+                <p>&copy; 2024 Craft.CV. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement form validation, step navigation, AI content generation, PDF export
+        (function() {
+            // Mock interactive behavior for demonstration
+            let currentStep = 1;
+            const totalSteps = 4;
+            
+            // Update progress indicator
+            function updateProgress() {
+                const progressBars = document.querySelectorAll('.flex-1');
+                progressBars.forEach((bar, index) => {
+                    if (index < currentStep) {
+                        bar.className = 'flex-1 bg-primary h-2 rounded-full';
+                    } else {
+                        bar.className = 'flex-1 bg-gray-200 h-2 rounded-full';
+                    }
+                });
+                
+                document.querySelector('.text-sm.text-secondary').textContent = `Step ${currentStep} of ${totalSteps}`;
+            }
+            
+            // Handle input changes for live preview
+            document.querySelectorAll('input[data-bind], textarea[data-bind]').forEach(input => {
+                input.addEventListener('input', function() {
+                    const bindPath = this.getAttribute('data-bind');
+                    const previewElement = document.querySelector(`[data-bind="${bindPath}"]`);
+                    if (previewElement && previewElement !== this) {
+                        previewElement.textContent = this.value || previewElement.textContent;
+                    }
+                });
+            });
+            
+            // Character count for textarea
+            const summaryTextarea = document.querySelector('textarea[data-bind="user.summary"]');
+            const charCount = document.querySelector('.text-xs.text-secondary:last-child');
+            
+            if (summaryTextarea && charCount) {
+                summaryTextarea.addEventListener('input', function() {
+                    charCount.textContent = `${this.value.length}/150`;
+                });
+            }
+            
+            // Mock AI assistance buttons
+            document.querySelectorAll('[data-event^="click:generate"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Show loading state
+                    const icon = this.querySelector('i');
+                    const originalClass = icon.className;
+                    icon.className = 'fas fa-spinner fa-spin';
+                    
+                    // Simulate AI generation delay
+                    setTimeout(() => {
+                        icon.className = originalClass;
+                        // TODO: Implement actual AI content generation
+                    }, 2000);
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

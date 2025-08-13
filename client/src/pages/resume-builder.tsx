@@ -224,7 +224,7 @@ export default function ResumeBuilder() {
                 <FileText className="text-white h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-xl font-poppins font-bold text-text-primary">ResumeAI</h1>
+                <h1 className="text-xl font-poppins font-bold text-text-primary">Craft.CV</h1>
                 <p className="text-xs text-secondary">Professional Resume Builder</p>
               </div>
             </div>

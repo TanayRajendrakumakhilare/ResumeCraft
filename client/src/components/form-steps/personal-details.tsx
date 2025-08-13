@@ -74,7 +74,7 @@ export default function PersonalDetailsStep({
                     <FormLabel>First Name *</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="John" 
+                        placeholder="FirstName" 
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
@@ -96,7 +96,7 @@ export default function PersonalDetailsStep({
                     <FormLabel>Last Name *</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Doe" 
+                        placeholder="lastname" 
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
@@ -121,7 +121,7 @@ export default function PersonalDetailsStep({
                   <FormControl>
                     <Input 
                       type="email" 
-                      placeholder="john.doe@email.com" 
+                      placeholder="Your.Personal@email.com" 
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -240,7 +240,7 @@ export default function PersonalDetailsStep({
                           <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                           <Input
                             type="url"
-                            placeholder="https://linkedin.com/in/johndoe"
+                            placeholder="https://linkedin.com/in/"
                             className="pl-10"
                             {...field}
                             onChange={(e) => {
@@ -267,7 +267,7 @@ export default function PersonalDetailsStep({
                           <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-700" />
                           <Input
                             type="url"
-                            placeholder="https://github.com/johndoe"
+                            placeholder="https://github.com/"
                             className="pl-10"
                             {...field}
                             onChange={(e) => {
@@ -294,7 +294,7 @@ export default function PersonalDetailsStep({
                           <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
                           <Input
                             type="url"
-                            placeholder="https://johndoe.dev"
+                            placeholder="https://Yourname.dev"
                             className="pl-10"
                             {...field}
                             onChange={(e) => {

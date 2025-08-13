@@ -1,4 +1,4 @@
-import { type Resume, type InsertResume, type UpdateResume } from "@shared/schema";
+import { type Resume, type InsertResume, type UpdateResume } from "../shared/schema.js";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -23,11 +23,11 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const now = new Date();
     const resume: Resume = {
-      ...insertResume,
-      id,
-      createdAt: now,
-      updatedAt: now,
-    };
+  ...(insertResume as Omit<Resume, "id" | "createdAt" | "updatedAt">),
+  id: String(randomUUID()),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
     this.resumes.set(id, resume);
     return resume;
   }
@@ -39,10 +39,12 @@ export class MemStorage implements IStorage {
     }
 
     const updated: Resume = {
-      ...existing,
-      ...updates,
-      updatedAt: new Date(),
-    };
+  ...existing,
+  ...(updates as Partial<Resume>),
+  personalDetails: (updates.personalDetails ?? existing.personalDetails) as Resume["personalDetails"],
+  updatedAt: new Date(),
+};
+
 
     this.resumes.set(id, updated);
     return updated;

@@ -1,0 +1,480 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - Create Professional CVs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#64748B',
+                        success: '#10B981',
+                        background: '#F8FAFC',
+                        textPrimary: '#1E293B',
+                        accent: '#8B5CF6'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-background font-inter text-textPrimary">
+    
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-poppins font-bold text-textPrimary">Craft.CV</h1>
+                        <p class="text-xs text-secondary">Professional Resume Builder</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-secondary hover:text-primary transition-colors">
+                        <i class="fas fa-question-circle"></i>
+                        <span class="ml-1 hidden sm:inline">Help</span>
+                    </button>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Save & Exit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Indicator -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-8">
+                    <!-- Step 1 - Active -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                            1
+                        </div>
+                        <span class="font-medium text-primary">Personal Details</span>
+                    </div>
+                    
+                    <!-- Connector -->
+                    <div class="w-12 h-0.5 bg-gray-300"></div>
+                    
+                    <!-- Step 2 -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                            2
+                        </div>
+                        <span class="text-secondary">Experience</span>
+                    </div>
+                    
+                    <!-- Connector -->
+                    <div class="w-12 h-0.5 bg-gray-300"></div>
+                    
+                    <!-- Step 3 -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                            3
+                        </div>
+                        <span class="text-secondary">Education</span>
+                    </div>
+                    
+                    <!-- Connector -->
+                    <div class="w-12 h-0.5 bg-gray-300"></div>
+                    
+                    <!-- Step 4 -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                            4
+                        </div>
+                        <span class="text-secondary">Skills</span>
+                    </div>
+                    
+                    <!-- Connector -->
+                    <div class="w-12 h-0.5 bg-gray-300"></div>
+                    
+                    <!-- Step 5 -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                            5
+                        </div>
+                        <span class="text-secondary">Review</span>
+                    </div>
+                </div>
+                
+                <div class="text-sm text-secondary">
+                    Step 1 of 5 • 20% Complete
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-screen">
+            
+            <!-- Left Panel - Form -->
+            <!-- @COMPONENT: FormPanel [currentStep, formData, onNext, onPrevious] -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-poppins font-bold text-textPrimary mb-2">Personal Details</h2>
+                    <p class="text-secondary">Let's start with your basic information to create your professional profile.</p>
+                </div>
+
+                <form class="space-y-6">
+                    <!-- Photo Upload Section -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <label class="block text-sm font-semibold text-textPrimary mb-4">Profile Photo (Optional)</label>
+                        <div class="flex items-center space-x-6">
+                            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300">
+                                <i class="fas fa-camera text-2xl text-gray-400"></i>
+                            </div>
+                            <div>
+                                <button type="button" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                    <i class="fas fa-upload mr-2"></i>Upload Photo
+                                </button>
+                                <p class="text-xs text-secondary mt-2">JPG, PNG up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-textPrimary mb-2">First Name *</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="Firstname" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-textPrimary mb-2">Last Name *</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="Lastname" data-mock="true">
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div>
+                        <label class="block text-sm font-semibold text-textPrimary mb-2">Email Address *</label>
+                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="Your.Personal@email.com" data-mock="true">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-textPrimary mb-2">Phone Number *</label>
+                            <input type="tel" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="+1 (555) 123-4567" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-textPrimary mb-2">Location</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="New York, NY" data-mock="true">
+                        </div>
+                    </div>
+
+                    <!-- Professional Summary with AI Assistant -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-semibold text-textPrimary">Professional Summary</label>
+                            <button type="button" class="bg-accent text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-purple-700 transition-colors flex items-center space-x-1">
+                                <i class="fas fa-magic"></i>
+                                <span>AI Assist</span>
+                            </button>
+                        </div>
+                        <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none" placeholder="Experienced software developer with 5+ years in full-stack development..." data-mock="true"></textarea>
+                        <p class="text-xs text-secondary mt-1">2-3 sentences describing your professional background and career objectives.</p>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-textPrimary mb-4">Professional Links</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-textPrimary mb-2">LinkedIn Profile</label>
+                                <div class="relative">
+                                    <i class="fab fa-linkedin absolute left-3 top-1/2 transform -translate-y-1/2 text-[#0077B5]"></i>
+                                    <input type="url" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="https://linkedin.com/in/" data-mock="true">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-textPrimary mb-2">GitHub Profile</label>
+                                <div class="relative">
+                                    <i class="fab fa-github absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700"></i>
+                                    <input type="url" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="https://github.com/" data-mock="true">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-textPrimary mb-2">Portfolio Website</label>
+                                <div class="relative">
+                                    <i class="fas fa-globe absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"></i>
+                                    <input type="url" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="https://Yourname.dev" data-mock="true">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Form Actions -->
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                    <button type="button" class="text-secondary hover:text-textPrimary transition-colors font-medium" disabled>
+                        <i class="fas fa-chevron-left mr-2"></i>Previous
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <button type="button" class="text-secondary hover:text-textPrimary transition-colors font-medium">
+                            Save as Draft
+                        </button>
+                        <button type="button" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center space-x-2" data-event="click:handleNext">
+                            <span>Continue</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: FormPanel -->
+
+            <!-- Right Panel - Preview -->
+            <!-- @COMPONENT: ResumePreview [formData, currentStep] -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-eye text-primary"></i>
+                        <h3 class="text-lg font-poppins font-semibold text-textPrimary">Resume Preview</h3>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 text-secondary hover:text-textPrimary transition-colors rounded-lg hover:bg-gray-100">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="p-2 text-secondary hover:text-textPrimary transition-colors rounded-lg hover:bg-gray-100">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="bg-success text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors font-medium text-sm">
+                            <i class="fas fa-download mr-2"></i>Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resume Document Preview -->
+                <div class="bg-white border border-gray-300 rounded-lg overflow-hidden" style="aspect-ratio: 8.5/11; max-height: 600px;">
+                    <div class="w-full h-full p-8 text-xs" style="transform: scale(0.75); transform-origin: top left; width: 133.33%; height: 133.33%;">
+                        <!-- Resume Header -->
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-2xl text-gray-400"></i>
+                            </div>
+                            <h1 class="text-2xl font-bold text-textPrimary font-poppins" data-bind="user.name">Joh</h1>
+                            <p class="text-base text-secondary font-medium mt-1">Software Developer</p>
+                            <div class="flex flex-wrap justify-center items-center space-x-4 mt-3 text-sm text-secondary">
+                                <span data-bind="user.email">Your.Personal@email.com</span>
+                                <span>•</span>
+                                <span data-bind="user.phone">+1 (555) 123-4567</span>
+                                <span>•</span>
+                                <span data-bind="user.location">Stuttgart, Germany</span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Summary Section -->
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-textPrimary border-b border-primary pb-1 mb-3 uppercase tracking-wide">Professional Summary</h2>
+                            <p class="text-sm leading-relaxed text-gray-700" data-bind="user.summary">
+                                Experienced software developer with 5+ years in full-stack development, specializing in React, Node.js, and cloud technologies. Proven track record of delivering scalable web applications and leading development teams in agile environments.
+                            </p>
+                        </div>
+
+                        <!-- Experience Section (Preview) -->
+                        <div class="mb-6">
+                            <h2 class="text-sm font-bold text-textPrimary border-b border-primary pb-1 mb-3 uppercase tracking-wide">Professional Experience</h2>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between items-start mb-1">
+                                    <div>
+                                        <h3 class="font-semibold text-textPrimary">Senior Software Developer</h3>
+                                        <p class="text-primary font-medium">Tech Solutions Inc.</p>
+                                    </div>
+                                    <span class="text-secondary text-xs">2021 - Present</span>
+                                </div>
+                                <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                                    <li>• Led development of customer-facing web applications serving 100K+ users</li>
+                                    <li>• Implemented CI/CD pipelines reducing deployment time by 60%</li>
+                                    <li>• Mentored junior developers and conducted code reviews</li>
+                                </ul>
+                            </div>
+
+                            <div class="text-xs text-gray-400 italic text-center py-4">
+                                [Experience details will appear as you complete the form]
+                            </div>
+                        </div>
+
+                        <!-- Placeholder sections -->
+                        <div class="mb-4">
+                            <h2 class="text-sm font-bold text-textPrimary border-b border-primary pb-1 mb-3 uppercase tracking-wide">Education</h2>
+                            <div class="text-xs text-gray-400 italic text-center py-4">
+                                [Education details will appear in the next step]
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="text-sm font-bold text-textPrimary border-b border-primary pb-1 mb-3 uppercase tracking-wide">Skills</h2>
+                            <div class="text-xs text-gray-400 italic text-center py-4">
+                                [Skills will be displayed after completing the skills section]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Selection -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-textPrimary text-sm">Template Style</h4>
+                        <button class="text-primary text-sm hover:text-blue-700 transition-colors">Browse All</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white p-2 rounded border-2 border-primary">
+                            <div class="h-12 bg-gradient-to-b from-gray-100 to-gray-200 rounded mb-1"></div>
+                            <p class="text-xs text-center text-primary font-medium">Professional</p>
+                        </div>
+                        <div class="bg-white p-2 rounded border border-gray-300 hover:border-primary cursor-pointer transition-colors">
+                            <div class="h-12 bg-gradient-to-b from-blue-50 to-blue-100 rounded mb-1"></div>
+                            <p class="text-xs text-center text-secondary">Modern</p>
+                        </div>
+                        <div class="bg-white p-2 rounded border border-gray-300 hover:border-primary cursor-pointer transition-colors">
+                            <div class="h-12 bg-gradient-to-b from-green-50 to-green-100 rounded mb-1"></div>
+                            <p class="text-xs text-center text-secondary">Creative</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ResumePreview -->
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal (Hidden by default) -->
+    <!-- @COMPONENT: AIAssistantModal [isOpen, onClose, section] -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" id="aiModal">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+                            <i class="fas fa-magic text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-poppins font-semibold text-textPrimary">AI Resume Assistant</h3>
+                            <p class="text-sm text-secondary">Enhance your professional summary with AI suggestions</p>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="font-semibold text-textPrimary mb-3">Tell us about your background:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-textPrimary mb-2">Job Title/Role</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent" placeholder="e.g., Software Developer" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-textPrimary mb-2">Years of Experience</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent">
+                                <option>Select experience</option>
+                                <option>0-1 years</option>
+                                <option>2-4 years</option>
+                                <option>5-7 years</option>
+                                <option>8+ years</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-textPrimary mb-2">Key Skills (comma-separated)</label>
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent" placeholder="e.g., JavaScript, React, Node.js, AWS" data-mock="true">
+                    </div>
+                    
+                    <button class="bg-accent text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                        <i class="fas fa-magic mr-2"></i>Generate Summary
+                    </button>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-textPrimary mb-3">AI-Generated Suggestions:</h4>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 cursor-pointer hover:border-accent transition-colors">
+                            <div class="flex items-start justify-between">
+                                <p class="text-sm text-textPrimary leading-relaxed flex-1">
+                                    Experienced software developer with 5+ years in full-stack development, specializing in JavaScript, React, and cloud technologies. Proven track record of delivering scalable web applications and leading development teams in agile environments.
+                                </p>
+                                <button class="text-accent hover:text-purple-700 ml-3 text-sm">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 cursor-pointer hover:border-accent transition-colors">
+                            <div class="flex items-start justify-between">
+                                <p class="text-sm text-textPrimary leading-relaxed flex-1">
+                                    Results-driven software developer with expertise in modern web technologies including React, Node.js, and AWS. Demonstrated success in building high-performance applications and mentoring development teams to achieve project goals.
+                                </p>
+                                <button class="text-accent hover:text-purple-700 ml-3 text-sm">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex justify-end space-x-3">
+                    <button class="text-secondary hover:text-textPrimary font-medium transition-colors">Cancel</button>
+                    <button class="bg-accent text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium">Apply Selection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AIAssistantModal -->
+
+    <script>
+        (function() {
+            // TODO: Implement form validation, step progression, AI integration, and PDF generation
+            
+            // Form step management
+            let currentStep = 1;
+            const totalSteps = 5;
+            
+            // Mock form progression
+            function updateProgress() {
+                const percentage = (currentStep / totalSteps) * 100;
+                document.querySelector('.progress-text').textContent = `Step ${currentStep} of ${totalSteps} • ${percentage}% Complete`;
+            }
+            
+            // Mock AI assistant modal
+            const aiButtons = document.querySelectorAll('[data-event*="AI"]');
+            const modal = document.getElementById('aiModal');
+            
+            // Mock file upload handling
+            const uploadButtons = document.querySelectorAll('button[type="button"]');
+            
+            // Mock real-time preview updates
+            function updatePreview() {
+                // TODO: Implement real-time preview updates based on form data
+                console.log('Preview updated');
+            }
+            
+            // Initialize
+            updateProgress();
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,7 +1,5 @@
 import { Eye, ZoomIn, ZoomOut, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   type PersonalDetails, 
   type ExperienceItem, 
@@ -12,7 +10,7 @@ import {
   type CertificateItem 
 } from "@shared/schema";
 import { generatePDF } from "@/lib/pdf-generator";
-import { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface ResumePreviewProps {
   personalDetails: PersonalDetails;
@@ -24,6 +22,8 @@ interface ResumePreviewProps {
   certificates: CertificateItem[];
 }
 
+const A4_RATIO = 11 / 8.5; // height / width for US Letter look; for true A4 use 297/210 ≈ 1.414
+
 export default function ResumePreview({
   personalDetails,
   experience,
@@ -34,6 +34,11 @@ export default function ResumePreview({
   certificates,
 }: ResumePreviewProps) {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // --- Page break markers state ---
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const [pageHeightPx, setPageHeightPx] = useState<number>(0);
+  const [breaks, setBreaks] = useState<number[]>([]); // y positions in px (unscaled, relative to contentRef)
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -68,6 +73,49 @@ export default function ResumePreview({
     }, {} as Record<string, SkillItem[]>);
   };
 
+  // --- Compute page breaks: based on content width -> pageHeightPx = width * A4_RATIO
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    const compute = () => {
+      // Use the element's layout width (unscaled). Absolute children use this same coordinate space.
+      const width = el.clientWidth;
+      const ph = width * A4_RATIO;
+      const total = el.scrollHeight; // unscaled scroll height
+      if (ph > 0) {
+        const count = Math.floor(total / ph);
+        const arr: number[] = [];
+        for (let i = 1; i <= count; i++) {
+          const y = Math.round(i * ph);
+          if (y < total - 8) arr.push(y);
+        }
+        setPageHeightPx(ph);
+        setBreaks(arr);
+      } else {
+        setBreaks([]);
+      }
+    };
+
+    // Recompute on resize and whenever content size changes
+    const ro = new ResizeObserver(() => compute());
+    ro.observe(el);
+
+    // Some content (images) may load after mount
+    const onLoad = () => compute();
+    window.addEventListener("load", onLoad);
+    window.addEventListener("resize", compute);
+
+    // Also recompute when data arrays change
+    compute();
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("load", onLoad);
+      window.removeEventListener("resize", compute);
+    };
+  }, [personalDetails, experience, education, skills, projects, languages, certificates]);
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -76,10 +124,10 @@ export default function ResumePreview({
           <h3 className="text-lg font-poppins font-semibold text-text-primary">Resume Preview</h3>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" title="Zoom out">
             <ZoomOut className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" title="Zoom in">
             <ZoomIn className="h-4 w-4" />
           </Button>
           <Button 
@@ -96,12 +144,38 @@ export default function ResumePreview({
       </div>
 
       {/* Resume Document Preview */}
-      <div className="bg-white border border-gray-300 rounded-lg overflow-hidden" style={{ aspectRatio: "8.5/11", maxHeight: "700px" }}>
-        <div className="w-full h-full p-8 text-xs overflow-y-auto" style={{ transform: "scale(0.8)", transformOrigin: "top left", width: "125%", height: "125%" }}>
-          
+      <div
+        className="bg-white border border-gray-300 rounded-lg overflow-hidden"
+        style={{ aspectRatio: "8.5/11", maxHeight: "700px" }}
+      >
+        <div
+          ref={contentRef}
+          data-pdf-root
+          className="relative w-full h-full p-8 text-xs overflow-y-auto"
+          style={{ transform: "scale(0.8)", transformOrigin: "top left", width: "125%", height: "125%" }}
+        >
+          {/* --- Page break markers (absolute inside contentRef) --- */}
+          {breaks.map((y, idx) => (
+            <div
+              key={`pb-${idx}`}
+              className="absolute left-0 w-full pointer-events-none"
+              style={{ top: y }}
+              aria-hidden
+            >
+              {/* dashed divider */}
+              <div className="border-t border-dashed border-gray-300" />
+              {/* pill label */}
+              <div className="absolute -top-3 right-3 bg-white/90 text-[10px] text-gray-600 px-2 py-0.5 rounded-full shadow-sm">
+                Page {idx + 1} ends • Page {idx + 2} starts
+              </div>
+            </div>
+          ))}
+
+          {/* ====== Resume content starts ====== */}
+
           {/* Resume Header */}
           <div className="text-center mb-6">
-            {personalDetails.photoUrl && (
+            {personalDetails.photoUrl ? (
               <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
                 <img 
                   src={personalDetails.photoUrl} 
@@ -110,10 +184,9 @@ export default function ResumePreview({
                   data-testid="img-resume-photo"
                 />
               </div>
-            )}
-            {!personalDetails.photoUrl && (
+            ) : (
               <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
+                <div className="w-8 h-8 bg-gray-400 rounded-full" />
               </div>
             )}
             
@@ -125,25 +198,15 @@ export default function ResumePreview({
               <p className="text-base text-secondary font-medium mt-1">Professional Summary Available</p>
             )}
             
-            <div className="flex flex-wrap justify-center items-center space-x-4 mt-3 text-sm text-secondary">
+            <div className="flex flex-wrap justify-center items-center gap-x-4 mt-3 text-sm text-secondary">
               {personalDetails.email && <span data-testid="text-resume-email">{personalDetails.email}</span>}
-              {personalDetails.phone && (
-                <>
-                  {personalDetails.email && <span>•</span>}
-                  <span data-testid="text-resume-phone">{personalDetails.phone}</span>
-                </>
-              )}
-              {personalDetails.location && (
-                <>
-                  {(personalDetails.email || personalDetails.phone) && <span>•</span>}
-                  <span data-testid="text-resume-location">{personalDetails.location}</span>
-                </>
-              )}
+              {personalDetails.phone && <span data-testid="text-resume-phone">{personalDetails.phone}</span>}
+              {personalDetails.location && <span data-testid="text-resume-location">{personalDetails.location}</span>}
             </div>
             
             {/* Professional Links */}
             {(personalDetails.linkedIn || personalDetails.github || personalDetails.portfolio) && (
-              <div className="flex flex-wrap justify-center items-center space-x-4 mt-2 text-xs text-primary">
+              <div className="flex flex-wrap justify-center items-center gap-x-4 mt-2 text-xs text-primary">
                 {personalDetails.linkedIn && <span>LinkedIn</span>}
                 {personalDetails.github && <span>GitHub</span>}
                 {personalDetails.portfolio && <span>Portfolio</span>}
@@ -170,7 +233,7 @@ export default function ResumePreview({
                 Professional Experience
               </h2>
               
-              {experience.slice(0, 3).map((exp, index) => (
+              {experience.slice(0, 3).map((exp) => (
                 <div key={exp.id} className="mb-4">
                   <div className="flex justify-between items-start mb-1">
                     <div>
@@ -189,23 +252,17 @@ export default function ResumePreview({
                   )}
                 </div>
               ))}
-              
-              {experience.length === 0 && (
-                <div className="text-xs text-gray-400 italic text-center py-4">
-                  [Experience details will appear as you complete the form]
-                </div>
-              )}
             </div>
           )}
 
           {/* Education Section */}
-          {education.length > 0 && (
+          {education.length > 0 ? (
             <div className="mb-6">
               <h2 className="text-sm font-bold text-text-primary border-b border-primary pb-1 mb-3 uppercase tracking-wide">
                 Education
               </h2>
               
-              {education.slice(0, 2).map((edu, index) => (
+              {education.slice(0, 2).map((edu) => (
                 <div key={edu.id} className="mb-3">
                   <div className="flex justify-between items-start mb-1">
                     <div>
@@ -221,9 +278,7 @@ export default function ResumePreview({
                 </div>
               ))}
             </div>
-          )}
-
-          {education.length === 0 && (
+          ) : (
             <div className="mb-6">
               <h2 className="text-sm font-bold text-text-primary border-b border-primary pb-1 mb-3 uppercase tracking-wide">
                 Education
@@ -235,7 +290,7 @@ export default function ResumePreview({
           )}
 
           {/* Skills Section */}
-          {skills.length > 0 && (
+          {skills.length > 0 ? (
             <div className="mb-6">
               <h2 className="text-sm font-bold text-text-primary border-b border-primary pb-1 mb-3 uppercase tracking-wide">
                 Skills
@@ -250,9 +305,7 @@ export default function ResumePreview({
                 </div>
               ))}
             </div>
-          )}
-
-          {skills.length === 0 && (
+          ) : (
             <div className="mb-6">
               <h2 className="text-sm font-bold text-text-primary border-b border-primary pb-1 mb-3 uppercase tracking-wide">
                 Skills
@@ -267,10 +320,10 @@ export default function ResumePreview({
           {projects.length > 0 && (
             <div className="mb-6">
               <h2 className="text-sm font-bold text-text-primary border-b border-primary pb-1 mb-3 uppercase tracking-wide">
-                Notable Projects
+                 Projects
               </h2>
               
-              {projects.slice(0, 2).map((project, index) => (
+              {projects.slice(0, 2).map((project) => (
                 <div key={project.id} className="mb-3">
                   <div className="flex justify-between items-start mb-1">
                     <h3 className="font-semibold text-text-primary">{project.name || "Project Name"}</h3>
@@ -319,13 +372,17 @@ export default function ResumePreview({
                   {certificates.slice(0, 3).map((cert) => (
                     <div key={cert.id} className="text-xs">
                       <p className="font-medium text-text-primary">{cert.name}</p>
-                      <p className="text-gray-700">{cert.issuer} - {formatDate(cert.dateIssued)}</p>
+                      <p className="text-gray-700">
+                        {cert.issuer} - {formatDate(cert.dateIssued)}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
             )}
           </div>
+
+          {/* ====== Resume content ends ====== */}
         </div>
       </div>
 
