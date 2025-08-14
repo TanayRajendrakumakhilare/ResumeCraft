@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Resume, PersonalDetails, ExperienceItem, EducationItem, SkillItem, ProjectItem, LanguageItem, CertificateItem } from "@shared/schema";
+import type {
+  Resume,
+  PersonalDetails,
+  ExperienceItem,
+  EducationItem,
+  SkillItem,
+  ProjectItem,
+  LanguageItem,
+  CertificateItem,
+} from "@shared/schema";
 
 import ProgressIndicator from "@/components/progress-indicator";
 import PersonalDetailsStep from "@/components/form-steps/personal-details";
@@ -14,6 +23,17 @@ import ReviewStep from "@/components/form-steps/review";
 import ResumePreview from "@/components/resume-preview";
 import { Button } from "@/components/ui/button";
 import { FileText, HelpCircle } from "lucide-react";
+
+/** ---- helper: extract server error messages from non-2xx responses ---- */
+const extractErrorMessage = async (response: Response) => {
+  const text = await response.text();
+  try {
+    const json = JSON.parse(text);
+    return json?.message || JSON.stringify(json);
+  } catch {
+    return text || "Unknown error";
+  }
+};
 
 export default function ResumeBuilder() {
   const { id } = useParams();
@@ -62,33 +82,68 @@ export default function ResumeBuilder() {
     }
   }, [existingResume]);
 
-  // Create resume mutation
+  /** ----------------- MUTATIONS ----------------- */
+
+  // Create resume (use fetch directly so we can show precise errors)
   const createResumeMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/resumes", data);
-      return response.json();
+      const res = await fetch("/api/resumes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(await extractErrorMessage(res));
+      return res.json();
     },
-    onSuccess: (data) => {
-      setResumeId(data.id);
+    onSuccess: (data: any) => {
+      const newId = data?.id ?? data?.resume?.id;
+      if (newId) setResumeId(newId);
       toast({
         title: "Resume created",
         description: "Your resume has been created successfully.",
       });
     },
-    onError: () => {
+    onError: (err: any) => {
       toast({
         title: "Error",
-        description: "Failed to create resume. Please try again.",
+        description: err?.message || "Failed to create resume. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  // Update resume mutation
+  // Update resume with 404→POST fallback (handles in-memory storage resets)
   const updateResumeMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("PATCH", `/api/resumes/${resumeId}`, data);
-      return response.json();
+      if (!resumeId) throw new Error("Missing resumeId");
+
+      // Try PATCH first
+      const patchRes = await fetch(`/api/resumes/${resumeId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+
+      if (patchRes.status === 404) {
+        // Map reset: create a fresh resume and set new id
+        const postRes = await fetch("/api/resumes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+        if (!postRes.ok) throw new Error(await extractErrorMessage(postRes));
+        const created = await postRes.json();
+        const newId = created?.id ?? created?.resume?.id;
+        if (!newId) throw new Error("Create succeeded but no id returned");
+        setResumeId(newId);
+        return { ok: true, created: true, id: newId };
+      }
+
+      if (!patchRes.ok) throw new Error(await extractErrorMessage(patchRes));
+      return patchRes.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/resumes", resumeId] });
@@ -97,44 +152,84 @@ export default function ResumeBuilder() {
         description: "Your changes have been saved.",
       });
     },
-    onError: () => {
+    onError: (err: any) => {
       toast({
         title: "Error",
-        description: "Failed to save changes. Please try again.",
+        description: err?.message || "Failed to save changes. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const saveResume = () => {
-    const resumeData = {
-      personalDetails,
-      experience,
-      education,
-      skills,
-      projects,
-      languages,
-      certificates,
-    };
+  const isSaving = createResumeMutation.isPending || updateResumeMutation.isPending;
 
-    if (resumeId) {
-      updateResumeMutation.mutate(resumeData);
-    } else {
-      createResumeMutation.mutate(resumeData);
+  /** Build a minimal payload for the current step (prevents validation errors on unfinished sections) */
+  const buildPayloadForStep = (step: number) => {
+    switch (step) {
+      case 1:
+        return { personalDetails };
+      case 2:
+        return { experience };
+      case 3:
+        return { education };
+      case 4:
+        return { skills, projects, languages, certificates };
+      case 5:
+      default:
+        return {
+          personalDetails,
+          experience,
+          education,
+          skills,
+          projects,
+          languages,
+          certificates,
+        };
     }
   };
 
-  const handleNext = () => {
+  // Save helper that awaits create/update
+  const saveResume = async (saveAll = false) => {
+    const payload = saveAll
+      ? {
+          personalDetails,
+          experience,
+          education,
+          skills,
+          projects,
+          languages,
+          certificates,
+        }
+      : buildPayloadForStep(currentStep);
+
+    try {
+      if (resumeId) {
+        await updateResumeMutation.mutateAsync(payload);
+      } else {
+        const created = await createResumeMutation.mutateAsync(payload);
+        const newId = created?.id ?? created?.resume?.id;
+        if (!newId) throw new Error("Create succeeded but no id returned");
+        setResumeId(newId);
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // NEXT: strict (must save before advancing)
+  const handleNext = async () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
-      saveResume();
+      const ok = await saveResume(false);
+      if (ok) setCurrentStep((s) => s + 1);
     }
   };
 
-  const handlePrevious = () => {
+  // PREVIOUS: navigate first, save best-effort (don’t block going back)
+  const handlePrevious = async () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      saveResume();
+      setCurrentStep((s) => s - 1);
+      saveResume(false).catch(() => {});
     }
   };
 
@@ -193,8 +288,8 @@ export default function ResumeBuilder() {
             languages={languages}
             certificates={certificates}
             onPrevious={handlePrevious}
-            onSave={saveResume}
-            isSaving={createResumeMutation.isPending || updateResumeMutation.isPending}
+            onSave={() => saveResume(true)}
+            isSaving={isSaving}
           />
         );
       default:
@@ -233,12 +328,15 @@ export default function ResumeBuilder() {
                 <HelpCircle className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Help</span>
               </Button>
-              <Button 
-                onClick={saveResume}
-                disabled={createResumeMutation.isPending || updateResumeMutation.isPending}
+              <Button
+                type="button"
+                onClick={async () => {
+                  await saveResume(true);
+                }}
+                disabled={isSaving}
                 data-testid="button-save-exit"
               >
-                Save & Exit
+                {isSaving ? "Saving..." : "Save & Exit"}
               </Button>
             </div>
           </div>

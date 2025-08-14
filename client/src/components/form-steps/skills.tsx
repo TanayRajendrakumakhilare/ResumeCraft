@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { 
-  skillItemSchema, 
-  projectItemSchema, 
-  languageItemSchema, 
+import {
+  skillItemSchema,
+  projectItemSchema,
+  languageItemSchema,
   certificateItemSchema,
-  type SkillItem, 
-  type ProjectItem, 
-  type LanguageItem, 
-  type CertificateItem 
+  type SkillItem,
+  type ProjectItem,
+  type LanguageItem,
+  type CertificateItem,
 } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +23,17 @@ import { Badge } from "@/components/ui/badge";
 import AIAssistantModal from "@/components/ai-assistant-modal";
 import { ChevronRight, ChevronLeft, Plus, Trash2, Wand2, X } from "lucide-react";
 
+// Relaxed schema so draft/incomplete items don't block navigation
+const relaxedSkillItem = skillItemSchema.partial();
+const relaxedProjectItem = projectItemSchema.partial();
+const relaxedLanguageItem = languageItemSchema.partial();
+const relaxedCertificateItem = certificateItemSchema.partial();
+
 const skillsFormSchema = z.object({
-  skills: z.array(skillItemSchema),
-  projects: z.array(projectItemSchema),
-  languages: z.array(languageItemSchema),
-  certificates: z.array(certificateItemSchema),
+  skills: z.array(relaxedSkillItem),
+  projects: z.array(relaxedProjectItem),
+  languages: z.array(relaxedLanguageItem),
+  certificates: z.array(relaxedCertificateItem),
 });
 
 type SkillsFormData = z.infer<typeof skillsFormSchema>;
@@ -43,6 +49,7 @@ interface SkillsStepProps {
   onCertificatesChange: (data: CertificateItem[]) => void;
   onNext: () => void;
   onPrevious: () => void;
+  isSaving?: boolean; // optional
 }
 
 export default function SkillsStep({
@@ -56,7 +63,9 @@ export default function SkillsStep({
   onCertificatesChange,
   onNext,
   onPrevious,
+  isSaving = false,
 }: SkillsStepProps) {
+  const [activeTab, setActiveTab] = useState<"skills" | "projects" | "languages" | "certificates">("skills");
   const [showAIModal, setShowAIModal] = useState(false);
   const [aiSection, setAISection] = useState<"skills" | "project">("skills");
   const [selectedProjectIndex, setSelectedProjectIndex] = useState<number | null>(null);
@@ -69,30 +78,36 @@ export default function SkillsStep({
       languages: languages.length > 0 ? languages : [],
       certificates: certificates.length > 0 ? certificates : [],
     },
+    mode: "onChange",
   });
 
-  const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({
-    control: form.control,
-    name: "skills",
-  });
+  const {
+    fields: skillFields,
+    append: appendSkill,
+    remove: removeSkill,
+  } = useFieldArray({ control: form.control, name: "skills" });
 
-  const { fields: projectFields, append: appendProject, remove: removeProject } = useFieldArray({
-    control: form.control,
-    name: "projects",
-  });
+  const {
+    fields: projectFields,
+    append: appendProject,
+    remove: removeProject,
+  } = useFieldArray({ control: form.control, name: "projects" });
 
-  const { fields: languageFields, append: appendLanguage, remove: removeLanguage } = useFieldArray({
-    control: form.control,
-    name: "languages",
-  });
+  const {
+    fields: languageFields,
+    append: appendLanguage,
+    remove: removeLanguage,
+  } = useFieldArray({ control: form.control, name: "languages" });
 
-  const { fields: certificateFields, append: appendCertificate, remove: removeCertificate } = useFieldArray({
-    control: form.control,
-    name: "certificates",
-  });
+  const {
+    fields: certificateFields,
+    append: appendCertificate,
+    remove: removeCertificate,
+  } = useFieldArray({ control: form.control, name: "certificates" });
 
   const addSkill = () => {
     appendSkill({
+      // @ts-expect-error allow partial during step
       id: crypto.randomUUID(),
       name: "",
       level: "intermediate",
@@ -102,6 +117,7 @@ export default function SkillsStep({
 
   const addProject = () => {
     appendProject({
+      // @ts-expect-error allow partial during step
       id: crypto.randomUUID(),
       name: "",
       description: "",
@@ -114,6 +130,7 @@ export default function SkillsStep({
 
   const addLanguage = () => {
     appendLanguage({
+      // @ts-expect-error allow partial during step
       id: crypto.randomUUID(),
       name: "",
       proficiency: "conversational",
@@ -122,6 +139,7 @@ export default function SkillsStep({
 
   const addCertificate = () => {
     appendCertificate({
+      // @ts-expect-error allow partial during step
       id: crypto.randomUUID(),
       name: "",
       issuer: "",
@@ -131,12 +149,42 @@ export default function SkillsStep({
     });
   };
 
-  const handleSubmit = (formData: SkillsFormData) => {
-    onChange(formData.skills);
-    onProjectsChange(formData.projects);
-    onLanguagesChange(formData.languages);
-    onCertificatesChange(formData.certificates);
+  // Save current form values up to parent state (without leaving the step)
+  const syncUp = () => {
+    const v = form.getValues();
+    onChange(v.skills);
+    onProjectsChange(v.projects);
+    onLanguagesChange(v.languages);
+    onCertificatesChange(v.certificates);
+  };
+
+  // Continue regardless of which tab is active; only block if ALL sections are empty
+  const handleContinue = () => {
+    const v = form.getValues();
+    const hasAny =
+      (v.skills?.length ?? 0) > 0 ||
+      (v.projects?.length ?? 0) > 0 ||
+      (v.languages?.length ?? 0) > 0 ||
+      (v.certificates?.length ?? 0) > 0;
+
+    // Always push current edits up
+    onChange(v.skills);
+    onProjectsChange(v.projects);
+    onLanguagesChange(v.languages);
+    onCertificatesChange(v.certificates);
+
+    if (!hasAny) {
+      // if absolutely nothing is filled, nudge user to Skills tab
+      setActiveTab("skills");
+      // optionally you can show a small message using your toast here
+      return;
+    }
     onNext();
+  };
+
+  const handleSaveDraft = () => {
+    syncUp();
+    // optional: you can show a toast from parent after this
   };
 
   const handleAISkills = () => {
@@ -152,22 +200,20 @@ export default function SkillsStep({
 
   const handleAIApply = (content: string) => {
     if (aiSection === "skills") {
-      // Parse skills from content and add them
-      const skillNames = content.split(",").map(s => s.trim()).filter(Boolean);
-      skillNames.forEach(skillName => {
+      const skillNames = content.split(",").map((s) => s.trim()).filter(Boolean);
+      skillNames.forEach((skillName) => {
         appendSkill({
+          // @ts-expect-error allow partial during step
           id: crypto.randomUUID(),
           name: skillName,
           level: "intermediate",
           category: "Technical",
         });
       });
-      const currentData = form.getValues();
-      onChange(currentData.skills);
+      onChange(form.getValues().skills);
     } else if (aiSection === "project" && selectedProjectIndex !== null) {
       form.setValue(`projects.${selectedProjectIndex}.description`, content);
-      const currentData = form.getValues();
-      onProjectsChange(currentData.projects);
+      onProjectsChange(form.getValues().projects);
     }
   };
 
@@ -176,8 +222,7 @@ export default function SkillsStep({
     const currentTechs = form.getValues(`projects.${projectIndex}.technologies`) || [];
     if (!currentTechs.includes(tech.trim())) {
       form.setValue(`projects.${projectIndex}.technologies`, [...currentTechs, tech.trim()]);
-      const currentData = form.getValues();
-      onProjectsChange(currentData.projects);
+      onProjectsChange(form.getValues().projects);
     }
   };
 
@@ -185,8 +230,7 @@ export default function SkillsStep({
     const currentTechs = form.getValues(`projects.${projectIndex}.technologies`) || [];
     const updatedTechs = currentTechs.filter((_, index) => index !== techIndex);
     form.setValue(`projects.${projectIndex}.technologies`, updatedTechs);
-    const currentData = form.getValues();
-    onProjectsChange(currentData.projects);
+    onProjectsChange(form.getValues().projects);
   };
 
   return (
@@ -202,8 +246,9 @@ export default function SkillsStep({
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <Tabs defaultValue="skills" className="space-y-6">
+          {/* We keep the form wrapper for layout/keyboard, but we DO NOT submit it */}
+          <div className="space-y-6">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="skills">Skills</TabsTrigger>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -239,13 +284,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Skill Name *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="JavaScript" 
+                                <Input
+                                  placeholder="JavaScript"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().skills;
-                                    onChange(currentData);
+                                    onChange(form.getValues().skills);
                                   }}
                                   data-testid={`input-skill-name-${index}`}
                                 />
@@ -262,13 +306,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Category *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="Programming" 
+                                <Input
+                                  placeholder="Programming"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().skills;
-                                    onChange(currentData);
+                                    onChange(form.getValues().skills);
                                   }}
                                   data-testid={`input-skill-category-${index}`}
                                 />
@@ -284,12 +327,11 @@ export default function SkillsStep({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Proficiency Level *</FormLabel>
-                              <Select 
-                                value={field.value} 
+                              <Select
+                                value={field.value}
                                 onValueChange={(value) => {
                                   field.onChange(value);
-                                  const currentData = form.getValues().skills;
-                                  onChange(currentData);
+                                  onChange(form.getValues().skills);
                                 }}
                               >
                                 <FormControl>
@@ -380,13 +422,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Project Name *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="E-commerce Platform" 
+                                <Input
+                                  placeholder="E-commerce Platform"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().projects;
-                                    onProjectsChange(currentData);
+                                    onProjectsChange(form.getValues().projects);
                                   }}
                                   data-testid={`input-project-name-${index}`}
                                 />
@@ -403,14 +444,13 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Project URL</FormLabel>
                               <FormControl>
-                                <Input 
+                                <Input
                                   type="url"
-                                  placeholder="https://github.com/username/project" 
+                                  placeholder="https://github.com/username/project"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().projects;
-                                    onProjectsChange(currentData);
+                                    onProjectsChange(form.getValues().projects);
                                   }}
                                   data-testid={`input-project-url-${index}`}
                                 />
@@ -429,13 +469,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Start Date</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="month" 
+                                <Input
+                                  type="month"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().projects;
-                                    onProjectsChange(currentData);
+                                    onProjectsChange(form.getValues().projects);
                                   }}
                                   data-testid={`input-project-start-date-${index}`}
                                 />
@@ -452,13 +491,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>End Date</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="month" 
+                                <Input
+                                  type="month"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().projects;
-                                    onProjectsChange(currentData);
+                                    onProjectsChange(form.getValues().projects);
                                   }}
                                   data-testid={`input-project-end-date-${index}`}
                                 />
@@ -517,8 +555,7 @@ export default function SkillsStep({
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  const currentData = form.getValues().projects;
-                                  onProjectsChange(currentData);
+                                  onProjectsChange(form.getValues().projects);
                                 }}
                                 data-testid={`textarea-project-description-${index}`}
                               />
@@ -558,13 +595,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Language *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="Spanish" 
+                                <Input
+                                  placeholder="Spanish"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().languages;
-                                    onLanguagesChange(currentData);
+                                    onLanguagesChange(form.getValues().languages);
                                   }}
                                   data-testid={`input-language-name-${index}`}
                                 />
@@ -580,12 +616,11 @@ export default function SkillsStep({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Proficiency Level *</FormLabel>
-                              <Select 
-                                value={field.value} 
+                              <Select
+                                value={field.value}
                                 onValueChange={(value) => {
                                   field.onChange(value);
-                                  const currentData = form.getValues().languages;
-                                  onLanguagesChange(currentData);
+                                  onLanguagesChange(form.getValues().languages);
                                 }}
                               >
                                 <FormControl>
@@ -663,13 +698,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Certificate Name *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="AWS Certified Solutions Architect" 
+                                <Input
+                                  placeholder="AWS Certified Solutions Architect"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().certificates;
-                                    onCertificatesChange(currentData);
+                                    onCertificatesChange(form.getValues().certificates);
                                   }}
                                   data-testid={`input-certificate-name-${index}`}
                                 />
@@ -686,13 +720,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Issuing Organization *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="Amazon Web Services" 
+                                <Input
+                                  placeholder="Amazon Web Services"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().certificates;
-                                    onCertificatesChange(currentData);
+                                    onCertificatesChange(form.getValues().certificates);
                                   }}
                                   data-testid={`input-certificate-issuer-${index}`}
                                 />
@@ -711,13 +744,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Date Issued *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="month" 
+                                <Input
+                                  type="month"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().certificates;
-                                    onCertificatesChange(currentData);
+                                    onCertificatesChange(form.getValues().certificates);
                                   }}
                                   data-testid={`input-certificate-date-issued-${index}`}
                                 />
@@ -734,13 +766,12 @@ export default function SkillsStep({
                             <FormItem>
                               <FormLabel>Expiry Date</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="month" 
+                                <Input
+                                  type="month"
                                   {...field}
                                   onChange={(e) => {
                                     field.onChange(e);
-                                    const currentData = form.getValues().certificates;
-                                    onCertificatesChange(currentData);
+                                    onCertificatesChange(form.getValues().certificates);
                                   }}
                                   data-testid={`input-certificate-expiry-date-${index}`}
                                 />
@@ -758,14 +789,13 @@ export default function SkillsStep({
                           <FormItem>
                             <FormLabel>Credential URL</FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="url"
-                                placeholder="https://www.credly.com/..." 
+                                placeholder="https://www.credly.com/..."
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e);
-                                  const currentData = form.getValues().certificates;
-                                  onCertificatesChange(currentData);
+                                  onCertificatesChange(form.getValues().certificates);
                                 }}
                                 data-testid={`input-certificate-credential-url-${index}`}
                               />
@@ -791,36 +821,41 @@ export default function SkillsStep({
               </TabsContent>
             </Tabs>
 
-            {/* Form Actions */}
+            {/* Form Actions (no real submit; we control navigation) */}
             <div className="flex justify-between items-center pt-6 border-t border-gray-200">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={onPrevious}
                 data-testid="button-previous"
+                disabled={isSaving}
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Previous
               </Button>
-              
+
               <div className="flex items-center space-x-3">
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="outline"
+                  onClick={handleSaveDraft}
                   data-testid="button-save-draft"
+                  disabled={isSaving}
                 >
                   Save as Draft
                 </Button>
-                <Button 
-                  type="submit"
+                <Button
+                  type="button"
+                  onClick={handleContinue}
                   data-testid="button-continue"
+                  disabled={isSaving}
                 >
                   Continue
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
             </div>
-          </form>
+          </div>
         </Form>
       </div>
 
